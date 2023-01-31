@@ -1,0 +1,14 @@
+h2 Alla träningsloggar hittar du här!
+
+ol
+  - logs.each do |log|
+    li 
+        p Logg:
+        a href="logs/#{log['id']}" #{log["content"]},       
+        p #{log['date']}
+        a href="logs/#{log['id']}/edit" Update 
+        form method="POST" action="logs/#{log['id']}/delete"
+            input type="submit" value="Remove"
+      
+      
+            
