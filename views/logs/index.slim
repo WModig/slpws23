@@ -1,14 +1,15 @@
 h2 Alla träningsloggar hittar du här!
+a href="/logs/new" Skapa ny logg
 
-ol
+div id="listholder"
   - logs.each do |log|
-    li 
-        p Logg:
-        a href="logs/#{log['id']}" #{log["content"]},       
+      li 
+        h2 Logg:
+        a href="logs/#{log['id']}" #{log["content"]} 
         p #{log['date']}
-        a href="logs/#{log['id']}/edit" Update 
+        a href="logs/#{log['id']}/edit" Update
         form method="POST" action="logs/#{log['id']}/delete"
             input type="submit" value="Remove"
-      
+        
       
             

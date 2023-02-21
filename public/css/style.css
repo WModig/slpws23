@@ -1,0 +1,39 @@
+*{
+  margin: 0.5rem;
+}
+
+body{
+  background: slategray;
+}
+nav {
+  height:100px;
+  background: azure;
+  display:flex;
+  justify-content: space-around;
+  align-items:center;
+}
+  
+nav a, nav a:link {
+  color:black;
+  text-decoration:none;
+  text-transform:uppercase;
+  font-size:1.2em;
+  font-weight:900;
+  opacity:0.5;
+  background-color: azure;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
+}
+  
+#listholder{
+  display:flex;
+  justify-content: space-evenly;
+  background-color: rgba(0, 0, 0, 0.144)
+}
+
+li{
+  font-size: 1.2rem;
+}
