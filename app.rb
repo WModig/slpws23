@@ -11,11 +11,20 @@ get('/') do
 end
 
 get('/logs') do
-    connect_to_db()
+    db = SQLite3::Database.new("db/traningslogg.db") #path?
+    db.results_as_hash = true
     result = db.execute("SELECT * FROM logs")
     slim(:"logs/index",locals:{logs:result})
 end
   
+get('/logs/:id') do 
+    id = params[:id].to_i
+    db = SQLite3::Database.new("db/traningslogg.db")
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
+    slim(:"logs/show",locals:{result:result})
+end
+
 get('/logs/new') do
     slim(:"logs/new")
 end
