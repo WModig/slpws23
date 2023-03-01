@@ -11,18 +11,17 @@ get('/') do
 end
 
 get('/logs') do
-    db = SQLite3::Database.new("db/traningslogg.db") #path?
-    db.results_as_hash = true
+    db = connect_to_db()
     result = db.execute("SELECT * FROM logs")
     slim(:"logs/index",locals:{logs:result})
 end
   
 get('/logs/:id') do 
     id = params[:id].to_i
-    db = SQLite3::Database.new("db/traningslogg.db")
-    db.results_as_hash = true
+    db = connect_to_db()
     result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
-    slim(:"logs/show",locals:{result:result})
+    result2 = db.execute("SELECT * FROM workout_exercise_rel INNER JOIN exercises ON workout_exercise_rel.exercise_id = exercises.id")
+    slim(:"logs/show",locals:{result:result, result2:result2})
 end
 
 get('/logs/new') do
@@ -41,8 +40,7 @@ end
 
 get('/logs/:id/edit') do
     id = params[:id].to_i
-    db = SQLite3::Database.new("db/traningslogg.db")
-    db.results_as_hash = true
+    db = connect_to_db()
     result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
     slim(:"logs/edit",locals:{result:result})
 end

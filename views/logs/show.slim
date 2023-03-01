@@ -1,3 +1,8 @@
 h1 Hello user #{result["user_id"]}
 
 p Logg: #{result["content"]}
+
+- workout_exercise_rel.each do |work_ex_rel|
+    p #{work_ex_rel['name']}
+    p #{work_ex_rel['reps']}
+

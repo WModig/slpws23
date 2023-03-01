@@ -5,6 +5,7 @@ div id="listholder"
   - logs.each do |log|
       li 
         h2 Logg:
+        p #{log['user_id']}
         a href="logs/#{log['id']}" #{log["content"]} 
         p #{log['date']}
         a href="logs/#{log['id']}/edit" Update
