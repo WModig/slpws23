@@ -10,12 +10,54 @@ get('/') do
     slim(:start)
 end
 
-get('/logs') do
-    db = connect_to_db()
-    result = db.execute("SELECT * FROM logs")
-    slim(:"logs/index",locals:{logs:result})
+get('/users/new') do
+    slim(:"users/register")
 end
 
+post('/users/new') do
+    username = params[:username]
+    password = params[:password]
+    password_confirm = params[:password_confirm]
+    if username == "" or password == ""
+        slim(:"users/register")
+    elsif password == password_confirm
+        #Lägg till användare
+        password_digest = BCrypt::Password.create(password)
+        db = SQLite3::Database.new("db/traningslogg.db")
+        db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)",username,password_digest)
+        redirect('/')
+    else
+        #Felhantering
+    end
+end
+
+get('/showlogin') do
+    slim(:"users/login")
+end
+
+post('/login') do
+    username = params[:username]
+    password = params[:password]
+    db = SQLite3::Database.new("db/traningslogg.db")
+    db.results_as_hash = true
+    result = db.execute("SELECT * FROM users WHERE username = ?",username).first
+    pwdigest = result["pwdigest"]
+    id = result["id"]
+    if BCrypt::Password.new(pwdigest) == password
+        session[:id] = id
+        redirect('/logs')
+    else
+        #Felhantering
+    end
+end
+
+get('/logs') do
+    id = session[:id].to_i
+    db = connect_to_db()
+    result = db.execute("SELECT * FROM logs WHERE user_id = ?", id)
+    result2 = db.execute("SELECT username FROM users WHERE id = ?", id)
+    slim(:"logs/index",locals:{logs:result, result2:result2})
+end
 
 get('/logs/new') do
     slim(:"logs/new")   
