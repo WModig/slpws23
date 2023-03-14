@@ -15,17 +15,18 @@ get('/logs') do
     result = db.execute("SELECT * FROM logs")
     slim(:"logs/index",locals:{logs:result})
 end
-  
+
+
+get('/logs/new') do
+    slim(:"logs/new")   
+end
+
 get('/logs/:id') do 
     id = params[:id].to_i
     db = connect_to_db()
     result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
-    result2 = db.execute("SELECT * FROM workout_exercise_rel INNER JOIN exercises ON workout_exercise_rel.exercise_id = exercises.id")
+    result2 = exercises_from_workout(db,id)
     slim(:"logs/show",locals:{result:result, result2:result2})
-end
-
-get('/logs/new') do
-    slim(:"logs/new")
 end
 
 post('/logs/new') do
@@ -34,7 +35,8 @@ post('/logs/new') do
     date = params[:date]
     db = SQLite3::Database.new("db/traningslogg.db")
     db.execute("INSERT INTO logs (user_id, content, date) VALUES (?,?,?)",user_id,content,date)
-    redirect('/logs')
+    db.execute("INSERT INTO workout (user_id) VALUES (?)",user_id)
+    redirect('/')
 end
 
 
