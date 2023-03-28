@@ -2,6 +2,13 @@
   margin: 0.5rem;
 }
 
+.error {
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 body{
   background: slategray;
 }
@@ -37,3 +44,4 @@ nav a, nav a:link {
 li{
   font-size: 1.2rem;
 }
+

@@ -32,22 +32,34 @@ post('/users/new') do
 end
 
 get('/showlogin') do
-    slim(:"users/login")
+    error_message = nil
+    slim(:'/users/login', locals: {error_message: error_message})
 end
 
 post('/login') do
+    error_message = nil
     username = params[:username]
     password = params[:password]
     db = SQLite3::Database.new("db/traningslogg.db")
     db.results_as_hash = true
     result = db.execute("SELECT * FROM users WHERE username = ?",username).first
-    pwdigest = result["pwdigest"]
-    id = result["id"]
-    if BCrypt::Password.new(pwdigest) == password
-        session[:id] = id
-        redirect('/logs')
+    if result == nil
+        # Username not found
+        error_message = "Incorrect username or password."
+        slim(:"users/login", locals: {error_message: error_message})
     else
-        #Felhantering
+        pwdigest = result["pwdigest"]
+        id = result["id"]
+
+        if BCrypt::Password.new(pwdigest) == password
+            # Successful login
+            session[:id] = id
+            redirect('/logs')
+        else
+            # Incorrect password
+            error_message = "Incorrect username or password."
+            slim(:"users/login", locals: {error_message: error_message})
+        end
     end
 end
 
@@ -59,16 +71,16 @@ get('/logs') do
     slim(:"logs/index",locals:{logs:result, result2:result2})
 end
 
-get('/logs/new') do
-    slim(:"logs/new")   
-end
-
 get('/logs/:id') do 
     id = params[:id].to_i
     db = connect_to_db()
     result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
     result2 = exercises_from_workout(db,id)
     slim(:"logs/show",locals:{result:result, result2:result2})
+end
+
+get('/logs/new') do
+    slim(:"logs/new")   
 end
 
 post('/logs/new') do
