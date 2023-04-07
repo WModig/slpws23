@@ -25,7 +25,7 @@ post('/users/new') do
         password_digest = BCrypt::Password.create(password)
         db = SQLite3::Database.new("db/traningslogg.db")
         db.execute("INSERT INTO users (username, pwdigest) VALUES (?,?)",username,password_digest)
-        redirect('/')
+        redirect('/showLogin')
     else
         #Felhantering
     end
@@ -71,14 +71,6 @@ get('/logs') do
     slim(:"logs/index",locals:{logs:result, result2:result2})
 end
 
-get('/logs/:id') do 
-    id = params[:id].to_i
-    db = connect_to_db()
-    result = db.execute("SELECT * FROM logs WHERE id = ?",id).first
-    result2 = exercises_from_workout(db,id)
-    slim(:"logs/show",locals:{result:result, result2:result2})
-end
-
 get('/logs/new') do
     slim(:"logs/new")   
 end
@@ -89,10 +81,46 @@ post('/logs/new') do
     date = params[:date]
     db = SQLite3::Database.new("db/traningslogg.db")
     db.execute("INSERT INTO logs (user_id, content, date) VALUES (?,?,?)",user_id,content,date)
-    db.execute("INSERT INTO workout (user_id) VALUES (?)",user_id)
-    redirect('/')
+    log_id = db.execute("SELECT last_insert_rowid();")
+    db.execute("INSERT INTO workout (user_id, log_id) VALUES (?,?)",user_id,log_id)
+    redirect("/logs/#{log_id}/exercises/new")
 end
 
+get('/logs/:id') do 
+    id = params[:id].to_i
+    db = connect_to_db()
+    result = db.execute("SELECT * FROM logs WHERE id = ?", id).first
+    result2 = db.execute("SELECT * FROM workout_exercise_rel WHERE workout_id = ?", id)
+    puts result2.inspect
+    slim(:"logs/show", locals: {result: result, result2: result2})
+end
+
+
+get('/logs/:log_id/exercises/new') do
+    log_id = params[:log_id].to_i
+    slim(:"exercises/new", locals: {log_id: log_id})
+end
+
+post('/logs/:log_id/exercises/create') do
+    log_id = params[:log_id].to_i
+    exercise_name = params[:exercise_name]
+    reps = params[:reps].to_i
+  
+    # Add exercise to the exercises table if it doesn't exist
+    db = connect_to_db()
+    exercise = db.execute("SELECT id FROM exercises WHERE name = ?", exercise_name).first
+    if exercise.nil?
+      db.execute("INSERT INTO exercises (name) VALUES (?)", exercise_name)
+      exercise_id = db.last_insert_row_id
+    else
+      exercise_id = exercise['id']
+    end
+  
+    # Add the exercise and reps to the workout_exercise_rel table
+    db.execute("INSERT INTO workout_exercise_rel (workout_id, exercise_id, reps) VALUES (?, ?, ?)", log_id, exercise_id, reps)
+  
+    redirect("/logs/#{log_id}")
+  end
 
 get('/logs/:id/edit') do
     id = params[:id].to_i

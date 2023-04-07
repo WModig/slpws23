@@ -1,15 +1,11 @@
 h1 Hello user #{result["user_id"]}
 
-p Logg: #{result["content"]}
+p Logg #{result["id"]}: #{result["content"]}
 
-
-p Exercises: #{result2}
-
+h2 Exercises
 - result2.each do |ex|
-  li 
-    h2 Exercise:
-    
-    p #{ex['name']}
-    p #{ex['reps']}
+  li
+    p Exercise: #{ex['exercise_id']}
+    p Reps: #{ex['reps']}
 
-        
+a href="/logs/#{result['id']}/exercises/new" Add Exercise to Workout Log

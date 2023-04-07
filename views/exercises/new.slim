@@ -1,0 +1,10 @@
+h1 Add Exercises to Workout Log #{log_id}
+
+form method="POST" action="/logs/#{log_id}/exercises/create"
+  label for="exercise_name" Exercise Name:
+  input type="text" name="exercise_name" id="exercise_name" 
+
+  label for="reps" Reps:
+  input type="number" name="reps" id="reps" min="1" required
+
+  input type="submit" value="Add Exercise"
