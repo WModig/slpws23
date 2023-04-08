@@ -1,5 +1,7 @@
 form action="/logs/new" method="POST"
-    input type="integer" name="user_id" placeholder="User?"
     input type="text" name="content" placeholder="What did you do today"
     input type="text" name="date" placeholder="Date of workout"
     input type="submit" value="Add log"
+
+- if !error_message2.nil?
+    p.error = error_message2

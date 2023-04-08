@@ -5,3 +5,6 @@ form action="/users/new" method="POST"
     input type="password" name="password" placeholder="Ange lösenord"
     input type="password" name="password_confirm" placeholder="Upprepa lösenord"
     input type="submit" value="Registrera ny användare!"/
+
+- if !error_message1.nil?
+    p.error = error_message1
